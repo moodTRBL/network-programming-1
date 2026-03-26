@@ -37,6 +37,12 @@ def play_game(conn: socket.socket, addr: tuple) -> None:
             break
 
         ans = conn.recv(BUFFER_SIZE).decode("ascii")
+
+        if not ans.isdigit():
+            text = f"non-numeric input!"
+            conn.sendall(text.encode("ascii"))
+            break
+
         if int(ans) == x + y:
             text = f"Correct! You win."
             conn.sendall(text.encode("ascii"))
@@ -48,14 +54,14 @@ def play_game(conn: socket.socket, addr: tuple) -> None:
             continue
 
 
-
 # TODO: Write the code from here.
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sock.bind((HOST, PORT))
-sock.listen(1)
+if __name__ == '__main__':
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind((HOST, PORT))
+    sock.listen()
 
-while True:
-    sc, address = sock.accept()
-    play_game(sc, address)
-    sc.close()
+    while True:
+        sc, address = sock.accept()
+        play_game(sc, address)
+        sc.close()

@@ -5,7 +5,6 @@ HOST        = '127.0.0.1'
 PORT        = 12345
 BUFFER_SIZE = 1024
 
-
 def count_vowels(message: str) -> int:
     """
     TODO: Count all vowel characters (A, E, I, O, U)
@@ -19,16 +18,14 @@ def count_vowels(message: str) -> int:
     """
     # ← implement vowel counting here
     result = []
-    count = 0
     for s in message:
         if s in "AaEeIiOoUu":
-            count += 1
             result.append(s)
 
     list_str = ", ".join(result)
     print(f"Vowels found : {list_str} → {len(result)} vowels")
 
-    return count
+    return len(result)
 
 
 # TODO: Write the code from here.

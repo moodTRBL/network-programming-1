@@ -20,24 +20,25 @@ def request():
     sock.connect((HOST, PORT))
     sock.sendall(request_text.encode('ascii'))
 
-    response = b""
+    raw = b""
     while True:
         data = sock.recv(4096)
         if not data:
             break
-        response += data
+        raw += data
     
     sock.close()
 
-    parts = response.split(b"\r\n\r\n", 1)
-    body = json.loads(parts[1].decode("utf-8"))
+    resp = raw.decode("utf-8")
+    parts = resp.split(b"\r\n\r\n", 1)
+    body = json.loads(parts[1])
 
     print(f"datetime   = {body.get('datetime')}")
     print(f"timezone   = {body.get('timezone')}")
     print(f"utc_offset = {body.get('utc_offset')}")
 
-request()
-
+if __name__ == '__main__':
+    request()
 
 # ----------------------------------------------------------
 # TODO: Verify your output matches the following format:

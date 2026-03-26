@@ -16,3 +16,5 @@ sock.sendto(data.encode("ascii"), (HOST, PORT))
 data, address = sock.recvfrom(BUFFER_SIZE)  
 response = data.decode('ascii')
 print(f'Server reply : {response}')
+
+sock.close()
