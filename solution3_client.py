@@ -30,34 +30,38 @@ def get_integer_answer(attempt: int) -> str:
             print("Invalid value. input int")
 
 # TODO: Write the code from here.
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect((HOST, PORT))
+def client():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((HOST, PORT))
 
-text = input("")
-sock.sendall(text.encode("ascii"))
-data = sock.recv(BUFFER_SIZE).decode("ascii")
-print(data)
-if "Error 400" in data:
-    sock.close()
-    exit()    
-
-attempt = 0
-while attempt < 3:
-    text = get_integer_answer(attempt)
+    text = "start"
     sock.sendall(text.encode("ascii"))
+    data = sock.recv(BUFFER_SIZE).decode("ascii")
+    print(data)
+    if "Error 400" in data:
+        sock.close()
+        exit()    
+
+    attempt = 0
+    while attempt < 3:
+        text = get_integer_answer(attempt)
+        sock.sendall(text.encode("ascii"))
+
+        resp = sock.recv(BUFFER_SIZE).decode("ascii")
+        print(f"{resp}")
+
+        if "Correct" in resp:
+            sock.close()
+            exit()
+        elif "Incorrect" in resp:
+            attempt += 1
+        elif "Game Over" in resp:
+            break  
 
     resp = sock.recv(BUFFER_SIZE).decode("ascii")
     print(f"{resp}")
 
-    if "Correct" in resp:
-        sock.close()
-        exit()
-    elif "Incorrect" in resp:
-        attempt += 1
-    elif "Game Over" in resp:
-        break  
+    sock.close()
 
-resp = sock.recv(BUFFER_SIZE).decode("ascii")
-print(f"{resp}")
-
-sock.close()
+if __name__ == '__main__':
+    client()

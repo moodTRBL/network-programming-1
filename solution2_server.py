@@ -29,17 +29,19 @@ def count_vowels(message: str) -> int:
 
 
 # TODO: Write the code from here.
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((HOST, PORT))
+def server():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((HOST, PORT))
 
-data = ""
-s, address = sock.recvfrom(BUFFER_SIZE)
-data = s.decode("utf-8")
+    while True:
+        s, address = sock.recvfrom(BUFFER_SIZE)
+        data = s.decode("utf-8")
 
-count = count_vowels(data)
-text = str(count)
+        count = count_vowels(data)
+        text = str(count)
 
-response = f'"Vowel count: {text}"'
-sock.sendto(response.encode("ascii"), address)
+        response = f'"Vowel count: {text}"'
+        sock.sendto(response.encode("ascii"), address)
 
-sock.close()
+if __name__ == '__main__':
+    server()

@@ -8,13 +8,21 @@ TIMEOUT_SEC = 5.0            # Seconds to wait for reply
 
 
 # TODO: Write the code from here.
-data = input("Client sends : ")
+def client():
+    data = input("Client sends : ")
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.sendto(data.encode("ascii"), (HOST, PORT))
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.sendto(data.encode("ascii"), (HOST, PORT))
+    sock.settimeout(TIMEOUT_SEC)
 
-data, address = sock.recvfrom(BUFFER_SIZE)  
-response = data.decode('ascii')
-print(f'Server reply : {response}')
+    try:
+        data, _ = sock.recvfrom(BUFFER_SIZE)  
+        response = data.decode('ascii')
+        print(f'Server reply : {response}')
+    except socket.timeout as e:
+        raise RuntimeError('I think the server is down') from e
+    finally:
+        sock.close()
 
-sock.close()
+if __name__ == '__main__':
+    client()

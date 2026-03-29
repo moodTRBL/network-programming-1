@@ -1,10 +1,11 @@
 import socket   
+import ssl
 import json     
 
 # API configuration
-HOST = 'worldtimeapi.org'          # Target hostname
-PORT = 80                          # Plain HTTP
-PATH = '/api/timezone/Asia/Seoul'  # Endpoint path
+HOST = 'timeapi.io'
+PORT = 443                                        
+PATH = '/api/v1/timezone/zone?timeZone=Asia/Seoul'
 
 request_text = (
     f"GET {PATH} HTTP/1.1\r\n"
@@ -18,24 +19,39 @@ request_text = (
 def request():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, PORT))
-    sock.sendall(request_text.encode('ascii'))
+    ssl_socket = ssl.wrap_socket(sock)
+    ssl_socket.sendall(request_text.encode('ascii'))
 
     raw = b""
     while True:
-        data = sock.recv(4096)
+        data = ssl_socket.recv(4096)
         if not data:
             break
         raw += data
     
-    sock.close()
+    try:
+        _, body = raw.split(b"\r\n\r\n", 1)
+    except ValueError:
+        print("invalid response")
+        return
+    
+    body_json = body.decode("utf-8")
 
-    resp = raw.decode("utf-8")
-    parts = resp.split(b"\r\n\r\n", 1)
-    body = json.loads(parts[1])
+    try:
+        start_idx = body_json.find('{')
+        end_idx = body_json.rfind('}') + 1
+        json_str = body_json[start_idx:end_idx]
+        
+        body = json.loads(json_str)
 
-    print(f"datetime   = {body.get('datetime')}")
-    print(f"timezone   = {body.get('timezone')}")
-    print(f"utc_offset = {body.get('utc_offset')}")
+        print(f"local_time = {body.get('local_time')}")
+        print(f"timezone   = {body.get('timezone')}")
+        print(f"utc_time   = {body.get('utc_time')}")
+    except (json.JSONDecodeError, ValueError) as e:
+        raise RuntimeError('JSON parse err') from e
+    finally:
+        ssl_socket.close()
+    
 
 if __name__ == '__main__':
     request()
