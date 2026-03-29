@@ -29,11 +29,13 @@ def play_game(conn: socket.socket, addr: tuple) -> None:
     x, y = random.randint(1, 20), random.randint(1, 20)
     text = f"What is {x} + {y}?"
     conn.sendall(text.encode("ascii"))
-    count = 0
+    count = 1
     while True:
         ans = conn.recv(BUFFER_SIZE).decode("ascii")
 
-        if not ans.isdigit():
+        try:
+            int(ans)
+        except:
             text = f"non-numeric input!"
             conn.sendall(text.encode("ascii"))
             break
@@ -44,7 +46,7 @@ def play_game(conn: socket.socket, addr: tuple) -> None:
             break
         else:
             count += 1
-            if count >= 3:
+            if count > MAX_ATTEMPTS:
                 text = f"Game Over. Out of attempts. The correct answer was [{x + y}]."
                 conn.sendall(text.encode("ascii"))
                 break

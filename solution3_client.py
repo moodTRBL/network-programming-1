@@ -24,15 +24,20 @@ def get_integer_answer(attempt: int) -> str:
     while True:
         text = input(f"Attempt: {attempt}\n")
 
-        if text.isdigit() and text != "":
+        try:
+            int(text)
             return text
-        else:
+        except ValueError:
             print("Invalid value. input int")
 
 # TODO: Write the code from here.
 def client():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((HOST, PORT))
+    try:
+        sock.connect((HOST, PORT))
+    except ConnectionError as e:
+        sock.close()
+        raise RuntimeError('I think the server is down') from e
 
     text = "start"
     sock.sendall(text.encode("ascii"))
@@ -42,8 +47,8 @@ def client():
         sock.close()
         exit()    
 
-    attempt = 0
-    while attempt < 3:
+    attempt = 1
+    while attempt <= MAX_ATTEMPTS:
         text = get_integer_answer(attempt)
         sock.sendall(text.encode("ascii"))
 
@@ -57,9 +62,6 @@ def client():
             attempt += 1
         elif "Game Over" in resp:
             break  
-
-    resp = sock.recv(BUFFER_SIZE).decode("ascii")
-    print(f"{resp}")
 
     sock.close()
 
