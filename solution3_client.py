@@ -45,7 +45,7 @@ def client():
     print(data)
     if "Error 400" in data:
         sock.close()
-        exit()    
+        return 
 
     attempt = 1
     while attempt <= MAX_ATTEMPTS:
@@ -57,7 +57,7 @@ def client():
 
         if "Correct" in resp:
             sock.close()
-            exit()
+            return
         elif "Incorrect" in resp:
             attempt += 1
         elif "Game Over" in resp:

@@ -35,10 +35,16 @@ def play_game(conn: socket.socket, addr: tuple) -> None:
 
         try:
             int(ans)
-        except:
-            text = f"non-numeric input!"
+        except ValueError:
+            count += 1
+            if count > MAX_ATTEMPTS:
+                text = f"Game Over. Out of attempts. The correct answer was [{x + y}]."
+                conn.sendall(text.encode("ascii"))
+                break
+
+            text = f"Incorrect. Try again!"
             conn.sendall(text.encode("ascii"))
-            break
+            continue
 
         if int(ans) == x + y:
             text = f"Correct! You win."
