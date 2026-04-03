@@ -36,8 +36,8 @@ def client():
     try:
         sock.connect((HOST, PORT))
     except ConnectionError as e:
+        print("I think the server is down")
         sock.close()
-        raise RuntimeError('I think the server is down') from e
 
     text = "start"
     sock.sendall(text.encode("ascii"))

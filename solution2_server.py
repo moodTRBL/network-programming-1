@@ -40,7 +40,7 @@ def server():
         count = count_vowels(data)
         text = str(count)
 
-        response = f'"Vowel count: {text}"'
+        response = f'Vowel count: {text}'
         sock.sendto(response.encode("ascii"), address)
 
 if __name__ == '__main__':

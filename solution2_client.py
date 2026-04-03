@@ -20,7 +20,7 @@ def client():
         response = data.decode('ascii')
         print(f'Server reply : {response}')
     except socket.timeout as e:
-        raise RuntimeError('I think the server is down') from e
+        print("I think the server is down")
     finally:
         sock.close()
 
